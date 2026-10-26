@@ -1,0 +1,11 @@
+.DS_Store
+.build/
+.swiftpm/
+dist/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.idea/
+*.moved-aside
+*.tmp
+.spherical-tmp

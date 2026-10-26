@@ -1,4 +1,9 @@
 import Foundation
+#if canImport(Darwin)
+import Darwin
+#elseif canImport(Glibc)
+import Glibc
+#endif
 
 public enum SyntheticScene {
     public static func color(for direction: Vec3) -> (UInt8, UInt8, UInt8) {

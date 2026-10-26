@@ -1,4 +1,9 @@
 import Foundation
+#if canImport(Darwin)
+import Darwin
+#elseif canImport(Glibc)
+import Glibc
+#endif
 
 /// How the source file is projected onto the sphere.
 public enum InputMode: Int32, CaseIterable, Sendable, Codable {

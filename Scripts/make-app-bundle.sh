@@ -26,6 +26,7 @@ cat > "$APP/Contents/Info.plist" << 'EOF'
 <dict>
   <key>CFBundleName</key><string>ThreeSixtyView</string>
   <key>CFBundleDisplayName</key><string>ThreeSixtyView</string>
+  <key>CFBundleGetInfoString</key><string>Native macOS viewer &amp; exporter for single-fisheye 360° video (Kodak PixPro SP360 4K / Wideshoot). Look around, pick views, export reframed or 360 equirectangular MP4.</string>
   <key>CFBundleIdentifier</key><string>org.threesixtyview.app</string>
   <key>CFBundleVersion</key><string>1.0.0</string>
   <key>CFBundleShortVersionString</key><string>1.0.0</string>

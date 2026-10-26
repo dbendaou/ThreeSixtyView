@@ -7,16 +7,19 @@ on:
 jobs:
   projection:
     name: Self-test (Linux)
-    runs-on: ubuntu-latest
+    # ubuntu-latest is 26.04, which swift-actions/setup-swift@v2 does not support.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: swift-actions/setup-swift@v2
         with:
           swift-version: "6.0.3"
-      - name: Build
-        run: swift build
-      - name: Projection, metadata, and fixture checks
-        run: swift run ThreeSixtyView --self-test
+      - name: Build ProjectionMath and SpatialMedia
+        run: |
+          swift build --target ProjectionMath
+          swift build --target SpatialMedia
+      - name: Projection and spatial checks
+        run: swift run PortableChecks
 
   macos:
     name: Build and round trip (macOS)

@@ -16,11 +16,25 @@ public enum MacRoundTrip {
         if !lint.isEmpty {
             throw ExportFailure.writer("Metal shader source lint failed: \(lint.joined(separator: "; "))")
         }
-        guard let device = MTLCreateSystemDefaultDevice() else {
-            throw MetalRenderError.noDevice
+        let renderer: MetalRenderer?
+        if let device = MTLCreateSystemDefaultDevice() {
+            do {
+                renderer = try MetalRenderer(device: device)
+                print("[PASS] metal shader compiles")
+            } catch MetalRenderError.noDevice {
+                renderer = nil
+                print("[SKIP] Metal unavailable (no GPU device); skipping shader compile and GPU round trip")
+            } catch MetalRenderError.pipeline(let message) where message.contains("command queue") {
+                renderer = nil
+                print("[SKIP] Metal unavailable (\(message)); skipping shader compile and GPU round trip")
+            } catch {
+                renderer = nil
+                throw error
+            }
+        } else {
+            renderer = nil
+            print("[SKIP] Metal unavailable (no GPU device); skipping shader compile and GPU round trip")
         }
-        let renderer = try MetalRenderer(device: device)
-        print("[PASS] metal shader compiles")
         let directory = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("threesixty-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -115,22 +129,24 @@ public enum MacRoundTrip {
         }
         print("[PASS] JPEG still round-trips")
 
-        guard let texture = renderer.upload(frame) else { throw MetalRenderError.texture }
-        let uniforms = GPUUniforms.make(
-            view: view, input: input, sourceWidth: 96, sourceHeight: 96,
-            backWidth: 1, backHeight: 1, outputWidth: 41, outputHeight: 41,
-            hasBack: false, showCalibration: false
-        )
-        let gpu = try renderer.renderReadback(source: texture, back: nil, uniforms: uniforms, width: 41, height: 41)
-        let cpu = renderFrame(source: frame, back: nil, view: view, input: input, outputWidth: 41, outputHeight: 41)
-        let gpuPixel = gpu.pixel(20, 20)
-        let cpuPixel = cpu.pixel(20, 20)
-        for (g, c) in [(gpuPixel.0, cpuPixel.0), (gpuPixel.1, cpuPixel.1), (gpuPixel.2, cpuPixel.2)] {
-            if abs(Int(g) - Int(c)) > 8 {
-                throw ExportFailure.writer("Metal pixel \(gpuPixel) differs from CPU \(cpuPixel)")
+        if let renderer {
+            guard let texture = renderer.upload(frame) else { throw MetalRenderError.texture }
+            let uniforms = GPUUniforms.make(
+                view: view, input: input, sourceWidth: 96, sourceHeight: 96,
+                backWidth: 1, backHeight: 1, outputWidth: 41, outputHeight: 41,
+                hasBack: false, showCalibration: false
+            )
+            let gpu = try renderer.renderReadback(source: texture, back: nil, uniforms: uniforms, width: 41, height: 41)
+            let cpu = renderFrame(source: frame, back: nil, view: view, input: input, outputWidth: 41, outputHeight: 41)
+            let gpuPixel = gpu.pixel(20, 20)
+            let cpuPixel = cpu.pixel(20, 20)
+            for (g, c) in [(gpuPixel.0, cpuPixel.0), (gpuPixel.1, cpuPixel.1), (gpuPixel.2, cpuPixel.2)] {
+                if abs(Int(g) - Int(c)) > 8 {
+                    throw ExportFailure.writer("Metal pixel \(gpuPixel) differs from CPU \(cpuPixel)")
+                }
             }
+            print("[PASS] Metal front view matches the CPU projection")
         }
-        print("[PASS] Metal front view matches the CPU projection")
 
         let hevcURL = directory.appendingPathComponent("hevc.mp4")
         do {

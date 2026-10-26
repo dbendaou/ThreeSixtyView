@@ -1,3 +1,5 @@
+<p align="center"><img src="Resources/AppIcon.png" alt="ThreeSixtyView" width="128"></p>
+
 # ThreeSixtyView
 
 Native macOS player for circular-fisheye video from mid-2010s consumer 360 cameras. It replaces the Kodak PixPro SP360 4K desktop app (and the Wideshoot rebrand of that app) for single-fisheye clips: the vendor software does not run on Apple Silicon, and this one does. Open the MP4 or still, look around, and export a flat video or a YouTube-ready equirectangular file. No ffmpeg.
@@ -7,12 +9,6 @@ Native macOS player for circular-fisheye video from mid-2010s consumer 360 camer
 - macOS 14 or later
 - Apple Silicon
 - Command Line Tools (`xcode-select --install`). Full Xcode is not required.
-
-## Screenshot
-
-A capture of the window goes in `docs/screenshots/window.png`.
-
-![ThreeSixtyView](docs/screenshots/window.png)
 
 The clips this was tuned for are H.264 1072×1072 at 29.97 fps, with AAC 48 kHz stereo, from the Fun Media Solutions *Guide logiciel 360 WIDESHOOT*. Each frame is one circular fisheye of about 225° that fills the square, shot from a roof mount with the lens pointing down. A square frame is detected as that fisheye, mount **Ceiling / down**, and the picture opens looking forward. A 2:1 frame is detected as equirectangular. Dual fisheye (one side-by-side frame, or a second file for the back lens) is in the inspector.
 
@@ -126,7 +122,7 @@ These are renders of a synthetic ceiling-mounted 225° fisheye, not a photograph
 ![Little Planet](docs/screenshots/little-planet.png)
 ![Equirect](docs/screenshots/equirect.png)
 
-A desktop screenshot of the window belongs in `docs/screenshots/` once you have the app running (`docs/screenshots/window.png`). The picture fills the window. Preset cards and the transport sit on glass along the bottom; file info is a capsule at the top left.
+The picture fills the window. Preset cards and the transport sit on glass along the bottom; file info is a capsule at the top left.
 
 The synthetic fisheye itself is `docs/synthetic-fisheye.png` (also `Fixtures/synthetic-fisheye.png`).
 
